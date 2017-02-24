@@ -1,0 +1,20 @@
+<html>
+<body>
+
+
+<ul>
+    {{#people}}
+    <li><a href="/person?id={{id}}">{{firstName}} {{lastName}}</a></li>
+    {{/people}}
+</ul>
+
+
+    {{#offset}}
+<a href="/?num={{offset}}"><button type="submit">Previous</button></a>
+    {{/offset}}
+
+<a href="/?num={{offset++}}"><button type="submit">Next</button></a>
+
+
+</body>
+</html>
