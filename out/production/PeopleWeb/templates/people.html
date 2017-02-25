@@ -9,12 +9,19 @@
 </ul>
 
 
-    {{#offset}}
-<a href="/?num={{offset}}"><button type="submit">Previous</button></a>
-    {{/offset}}
+{{#backIndex}}
+<a href="/?i={{backIndex}}"><button type="submit">Previous</button></a>
+{{/backIndex}}
+{{#forwardIndex}}
+<a href="/?i={{forwardIndex}}"><button type="submit">Next</button></a>
+{{/forwardIndex}}
+</br>
 
-<a href="/?num={{offset++}}"><button type="submit">Next</button></a>
-
+<!--show:-->
+<!--<form>-->
+    <!--<input type="text" placeholder="{{userPageSize}}" size="5" name="pageSize"/>-->
+    <!--<button type="submit">Set</button>-->
+<!--</form>-->
 
 </body>
 </html>

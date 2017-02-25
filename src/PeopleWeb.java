@@ -1,4 +1,5 @@
 import spark.ModelAndView;
+import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
@@ -15,33 +16,45 @@ public class PeopleWeb {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        people = scanFileIntoArray("people.csv");
+        people = scanFileIntoArray("people.csv"); //todo replace first line and deal with it
+        int peopleSize = people.size();
 
         Spark.init();
 
         Spark.get("/", (
                         (request, response) -> {
-                            String temp = request.queryParams("num");
-                            int offset = 0;
-
-                            if (temp!=null) {
-                                offset = Integer.parseInt(temp);
+                            int peopleIndex = 0;
+                            String stringIndex = request.queryParams("i");
+                            if (stringIndex != null) {
+                                peopleIndex = Integer.parseInt(stringIndex);
                             }
-                            List<Person> tempo = people.subList(offset, offset+20);
 
+                            int pageSize = 20;
+//                            String strPageSize = request.queryParams("pageSize");
+//                            if (strPageSize!=null) {
+//                                pageSize = Integer.parseInt(strPageSize);
+//                            }
+
+                            List<Person> pageOfPeople = people.subList(peopleIndex, peopleIndex + pageSize);
                             HashMap m = new HashMap();
-                            m.put("offset", offset -20);
-                            m.put("offset++", offset +20);
-                            m.put("people", tempo);
+
+                            if (peopleIndex >= pageSize) {
+                                m.put("backIndex", peopleIndex - pageSize);
+                            }
+                            if (peopleIndex <= (peopleSize - (2 * pageSize))) {
+                                m.put("forwardIndex", peopleIndex + pageSize);
+                            }
+                            m.put("pageSize", pageSize);
+                            m.put("people", pageOfPeople);
                             return new ModelAndView(m, "people.html");
                         }),
-                new MustacheTemplateEngine()
+                new MustacheTemplateEngine()  //todo if /?i=19 then no back button is shown, but i cant see the first 18 entries
         );
 
         Spark.get("/person", (
                         (request, response) -> {
                             String id = request.queryParams("id");
-                            Person person = people.get(Integer.parseInt(id) -1);
+                            Person person = people.get(Integer.parseInt(id) - 1);
 
                             HashMap m = new HashMap();
                             m.put("person", person);
@@ -50,6 +63,14 @@ public class PeopleWeb {
                 new MustacheTemplateEngine()
         );
     }
+
+//    Spark.post("/logout", (request, response) -> {
+//        Session session = request.session();
+//        session.invalidate();
+//
+//        response.redirect("/");
+//        return "";
+//    });
 
     static ArrayList<Person> scanFileIntoArray(String filename) throws FileNotFoundException {
         File f = new File(filename);
