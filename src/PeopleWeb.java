@@ -30,13 +30,15 @@ public class PeopleWeb {
                             }
 
                             int pageSize = 20;
-//                            String strPageSize = request.queryParams("pageSize");
+//                            String strPageSize = request.queryParams("pageSize"); //todo allow user to change pageSize
 //                            if (strPageSize!=null) {
 //                                pageSize = Integer.parseInt(strPageSize);
 //                            }
 
                             List<Person> pageOfPeople = people.subList(peopleIndex, peopleIndex + pageSize);
                             HashMap m = new HashMap();
+
+                            //if ((peopleIndex - pageSize)< 0) {}  //todo - back to start?
 
                             if (peopleIndex >= pageSize) {
                                 m.put("backIndex", peopleIndex - pageSize);
@@ -48,7 +50,7 @@ public class PeopleWeb {
                             m.put("people", pageOfPeople);
                             return new ModelAndView(m, "people.html");
                         }),
-                new MustacheTemplateEngine()  //todo if /?i=19 then no back button is shown, but i cant see the first 18 entries
+                new MustacheTemplateEngine()
         );
 
         Spark.get("/person", (
