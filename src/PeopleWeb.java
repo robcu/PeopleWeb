@@ -12,11 +12,24 @@ import java.util.Scanner;
 
 public class PeopleWeb {
 
-    static ArrayList<Person> people = new ArrayList<>();
+    static ArrayList<Person> scanFileIntoArray(String filename) throws FileNotFoundException {
+        File f = new File(filename);
+        Scanner fileScanner = new Scanner(f);
+        ArrayList<Person> people = new ArrayList<>();
+        while (fileScanner.hasNext()) {
+            String line = fileScanner.nextLine();
+            String[] columns = line.split("\\,");
+            Person person = new Person(columns[0], columns[1], columns[2], columns[3], columns[4], columns[5]);
+            people.add(person);
+        }
+        fileScanner.close();
+        return people;
+    }
+
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        people = scanFileIntoArray("people.csv"); //todo replace first line and deal with it
+        ArrayList<Person> people = scanFileIntoArray("people.csv");
         int peopleSize = people.size();
 
         Spark.init();
@@ -30,15 +43,9 @@ public class PeopleWeb {
                             }
 
                             int pageSize = 20;
-//                            String strPageSize = request.queryParams("pageSize"); //todo allow user to change pageSize
-//                            if (strPageSize!=null) {
-//                                pageSize = Integer.parseInt(strPageSize);
-//                            }
 
                             List<Person> pageOfPeople = people.subList(peopleIndex, peopleIndex + pageSize);
                             HashMap m = new HashMap();
-
-                            //if ((peopleIndex - pageSize)< 0) {}  //todo - back to start?
 
                             if (peopleIndex >= pageSize) {
                                 m.put("backIndex", peopleIndex - pageSize);
@@ -66,26 +73,5 @@ public class PeopleWeb {
         );
     }
 
-//    Spark.post("/logout", (request, response) -> {
-//        Session session = request.session();
-//        session.invalidate();
-//
-//        response.redirect("/");
-//        return "";
-//    });
-
-    static ArrayList<Person> scanFileIntoArray(String filename) throws FileNotFoundException {
-        File f = new File(filename);
-        Scanner fileScanner = new Scanner(f);
-        ArrayList<Person> people = new ArrayList<>();
-        while (fileScanner.hasNext()) {
-            String line = fileScanner.nextLine();
-            String[] columns = line.split("\\,");
-            Person person = new Person(columns[0], columns[1], columns[2], columns[3], columns[4], columns[5]);
-            people.add(person);
-        }
-        fileScanner.close();
-        return people;
-    }
 
 }
